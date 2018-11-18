@@ -11,62 +11,71 @@
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-#include <wchar.h>
 #include <stdio.h>
 
-int			ft_putch(t_mask *mask, int c)
+int			ft_space_null(int n, t_mask *mask)
 {
-	char	to_add;
-	int		len;
-
-	to_add = ' ';
-	len = 0;
-	(mask->null == 1) ? to_add = '0' : 0;
-	while ((mask->width)-- > 1 && mask->minus == 0)
-	{
-		write(1, &to_add, 1);
-		len++;
-	}
-	write(1, &c, 1);
-	while ((mask->width)-- > 0 && mask->minus == 1)
-	{
-		len++;
-		write(1, " ", 1);
-	}
-	return (len + 1);
-}
-
-int			ft_putstr(t_mask *mask, char *str)
-{
-	char	to_add;
-	int		len;
-	int		len_str;
 	int		i;
 
-	to_add = ' ';
+	i = 0;
+	while (n > 0)
+	{
+		(mask->null == 0) ? write(1, " ", 1) : 0;
+		(mask->null == 1) ? write(1, "0", 1) : 0;
+		n--;
+		i++;
+	}
+	return (i);
+}
+
+int			bad_type(t_mask *mask, void *s)
+{
+	if (!s)
+		ft_space_null(mask->width, mask);
+	return ((mask->width > 0) ? mask->width - 1 : 0);
+}
+
+int		percent(t_mask *mask, void *data)
+{
+	if (!data)
+		return (ft_putch(mask, (void *)'%'));
+	return (0);	
+}
+
+t_functions	*update(void)
+{
+	t_functions	*funcs;
+
+	funcs = (t_functions *)malloc(sizeof(t_functions) * 13);
+	funcs[CHAR] = ft_putch;
+	funcs[STRING] = ft_putstring;
+	funcs[BAD_TYPE] = bad_type;
+	funcs[POINTER] = pointer;
+	funcs[PERCENT] = percent;
+	funcs[DECIMAL] = decimal;
+	funcs[INT] = decimal;
+	funcs[U_OCTAL] = octal;
+	funcs[U_DECIMAL] = unsigned_decimal;
+	funcs[U_HEX_LOWER] = hexdecimal_low;
+	funcs[U_HEX_UPPER] = hexdecimal_up;
+	return (funcs);
+}
+
+int			all_oper(t_mask *mask, void *data)
+{
+	t_functions	*funcs;
+	int			len;
+
 	len = 0;
-	i = -1;
-	len_str = ft_strlen(str);
-	(mask->null == 1) ? to_add = '0' : 0;
-	while (mask->width > len_str && mask->minus == 0)
-	{
-		write(1, &to_add, 1);
-		mask->width--;
-		len++;
-	}
-	write(1, str, len_str);
-	while (mask->width > len_str && mask->minus == 1)
-	{
-		write(1, " ", 1);
-		mask->width--;
-		len++;
-	}
-	return (len_str + len);
+	funcs = update();
+	len += funcs[mask->type](mask, data);
+	free(funcs);
+	return (len);
 }
 
 int			ft_printf(const char *format, ...)
 {
-	va_list 	ap;
+	va_list		ap;
 	t_mask		*mask;
 	int			i;
 	int			len;
@@ -79,24 +88,25 @@ int			ft_printf(const char *format, ...)
 		if (format[i] == '%')
 		{
 			i += read_mask(((char *)format) + i, &mask);
-			(mask->type == CHAR && mask->l == 0) ? len += ft_putch(mask, va_arg(ap, unsigned char)) : 0;
-			(mask->type == CHAR && mask->l == 1) ? len += ft_putch(mask, va_arg(ap, wchar_t)) : 0;
-			(mask->type == STRING && mask->l == 0) ? len += ft_putstr(mask, va_arg(ap, char *)) : 0;
-			(mask->type == STRING && mask->l == 1) ? len += ft_putstr(mask, va_arg(ap, wchar_t *)) : 0;
-			(mask->type == BAD_TYPE) ? write(1, "%", 1) : 0;
+			if (mask->type == BAD_TYPE || mask->type == PERCENT)
+				len += all_oper(mask, NULL);
+			else
+				len += all_oper(mask, va_arg(ap, void *));
 			free(mask);
-			i--;
+			(i > 0) ? i-- : 0;
 			continue ;
 		}
-		write(1, &(format[i]), 1);
-		len++;
+		len += write(1, &(format[i]), 1);
 	}
 	va_end(ap);
+	//system("leaks a.out");
 	return (len);
 }
 
-// int main()
-// {
-// 	printf("%010s\n", "abcde");
-// 	ft_printf("%010s\n", "abcde");
-// }
+int	main(void)
+{	char	*b;
+	long	x = 4294967296;
+	printf("%i\n", printf("%+05d", 0));
+	fflush(stdout);
+	printf("%i\n", ft_printf("%+05d", 0));
+}
