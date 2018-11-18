@@ -6,7 +6,7 @@
 /*   By: akorchyn <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/13 11:52:03 by akorchyn          #+#    #+#             */
-/*   Updated: 2018/11/13 11:52:05 by akorchyn         ###   ########.fr       */
+/*   Updated: 2018/11/18 21:54:51 by akorchyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,10 +103,3 @@ int			ft_printf(const char *format, ...)
 	return (len);
 }
 
-int	main(void)
-{	char	*b;
-	long	x = 4294967296;
-	printf("%i\n", printf("%+05d", 0));
-	fflush(stdout);
-	printf("%i\n", ft_printf("%+05d", 0));
-}
