@@ -64,8 +64,7 @@ int					decimal(t_mask *mask, void *data)
 	nzeros = (mask->accurancy > len) ? mask->accurancy - len : 0;
 	(mask->accurancy > 0 && num[0] == '-') ? nzeros++ : 0;
 	nspaces = (mask->width > len + nzeros) ? mask->width - len - nzeros : 0;
-	if (mask->space == 1 && num[0] != '-')
-		nspaces++;
+	(mask->space && num[0] != '-' && !nspaces) ? nspaces++ : 0;
 	(mask->plus == 1 && num[0] != '-') ? nspaces-- : 0;
 	if (mask->minus == 0 && (mask->null == 0 || nzeros > 0))
 		count += ft_space_null_di(nspaces, mask);
