@@ -35,16 +35,9 @@ int							u_null(t_mask *mask, void *data)
 			mask->width--;
 			return (1);
 		}
-		if ((mask->sharp == 1 || mask->type == POINTER) && mask->width > -1 &&
-			 (mask->type == U_HEX_LOWER || mask->type == POINTER))
+		if (mask->type == POINTER && mask->width > -1)
 		{
 			write(1, "0x", 2);
-			mask->width -= 2;
-			return (2);
-		}
-		if (mask->sharp == 1 && mask->type == U_HEX_UPPER && mask->width > -1)
-		{
-			write(1, "0X", 2);
 			mask->width -= 2;
 			return (2);
 		}
