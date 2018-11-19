@@ -32,7 +32,7 @@
 # define BAD_TYPE 11
 
 # define CHECK(x) if (x != -1) return (ft_space_null_di(mask->width, mask) + x);
-# define NILL(x) if (x == -1) return (ft_space_null_di(mask->width, mask) + 6);
+# define NILL(x) if (x != 0) return (x);
 
 typedef struct		s_vars
 {

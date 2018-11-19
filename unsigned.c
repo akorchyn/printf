@@ -62,10 +62,10 @@ int							octal(t_mask *mask, void *data)
 	nspaces = (mask->width > len + nzeros) ? mask->width - len - nzeros : 0;
 	(mask->sharp == 1 && nzeros > 0) ? nzeros-- : 0;
 	(mask->sharp == 1 && nzeros == 0) ? nspaces-- : 0;
-	if (mask->minus == 0 && (mask->null == 0 || nzeros > 0))
+	if (mask->minus == 0 && (mask->null == 0 || nzeros > 0 || !mask->accurancy))
 		n += ft_space_null_di(nspaces, mask);
 	(mask->sharp == 1 && num[0] != '0') ? n += write(1, "0", 1) : 0;
-	if (mask->minus == 0 && mask->null == 1 && nzeros == 0)
+	if (mask->minus == 0 && mask->null == 1 && nzeros == 0 && mask->accurancy)
 		n += ft_space_null_di(nspaces, mask);
 	while (nzeros-- > 0)
 		n += write(1, "0", 1);
@@ -115,10 +115,10 @@ int							hexdecimal_low(t_mask *mask, void *data)
 	nzeros = (mask->accurancy > len) ? mask->accurancy - len : 0;
 	nspaces = (mask->width > len + nzeros) ? mask->width - len - nzeros : 0;
 	(mask->sharp == 1) ? nspaces -= 2 : 0;
-	if (mask->minus == 0 && (mask->null == 0 || nzeros > 0))
+	if (mask->minus == 0 && (mask->null == 0 || nzeros > 0 || !mask->accurancy))
 		count += ft_space_null_di(nspaces, mask);
 	(mask->sharp == 1 && num[0] != '0') ? count += write(1, "0x", 2) : 0;
-	if (mask->minus == 0 && mask->null == 1 && nzeros == 0)
+	if (mask->minus == 0 && mask->null == 1 && nzeros == 0 && mask->accurancy)
 		count += ft_space_null_di(nspaces, mask);
 	while (nzeros-- > 0)
 		count += write(1, "0", 1);
@@ -144,10 +144,10 @@ int							hexdecimal_up(t_mask *mask, void *data)
 	nzeros = (mask->accurancy > len) ? mask->accurancy - len : 0;
 	nspaces = (mask->width > len + nzeros) ? mask->width - len - nzeros : 0;
 	(mask->sharp == 1) ? nspaces -= 2 : 0;
-	if (mask->minus == 0 && (mask->null == 0 || nzeros > 0))
+	if (mask->minus == 0 && (mask->null == 0 || nzeros > 0 || !mask->accurancy))
 		count += ft_space_null_di(nspaces, mask);
 	(mask->sharp == 1 && num[0] != '0') ? count += write(1, "0X", 2) : 0;
-	if (mask->minus == 0 && mask->null == 1 && nzeros == 0)
+	if (mask->minus == 0 && mask->null == 1 && nzeros == 0 && mask->accurancy)
 		count += ft_space_null_di(nspaces, mask);
 	while (nzeros-- > 0)
 		count += write(1, "0", 1);

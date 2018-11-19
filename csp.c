@@ -24,11 +24,14 @@ static int	ft_wlen(wchar_t *str)
 
 static int	nill(t_mask *mask, void *data)
 {
+	int		len;
+
+	len = 0;
 	if (!data)
 	{
-		write(1, "(null)", 6);
-		mask->width -= 6;
-		return (-1);
+		len += ft_space_null_di(mask->width - 6, mask);
+		len += write(1, "(null)", (mask->accurancy > 0) ? mask->accurancy : 6);
+		return (len);
 	}
 	return (0);
 }
@@ -42,16 +45,16 @@ int			pointer(t_mask *mask, void *data)
 	str = ft_itoa_base((unsigned long long)data, 16, 0);
 	len = ft_strlen(str);
 	if (mask->minus == 0 && mask->null == 0)
-		ft_space_null(mask->width - len - 3, mask);
+		ft_space_null(mask->width - len - 2, mask);
 	write(1, "0x", 2);
 	if (mask->minus == 0 && mask->null == 1)
-		ft_space_null(mask->width - len - 3, mask);
+		ft_space_null(mask->width - len - 2, mask);
 	write(1, str, len);
-	(mask->minus == 1) ? ft_space_null(mask->width - len - 3, mask) : 0;
+	(mask->minus == 1) ? ft_space_null(mask->width - len - 2, mask) : 0;
 	free(str);
 	if (mask->width > len)
 		return (mask->width);
-	return (len);
+	return (len + 2);
 }
 
 int			ft_putch(t_mask *mask, void *s)
@@ -81,8 +84,8 @@ int			ft_putstring(t_mask *mask, void *s)
 	int		count;
 	int		len;
 
-	count = 0;
-	NILL(nill(mask, s));
+	count = nill(mask, s);
+	NILL(count);
 	if (mask->l == 1)
 	{
 		len = (ft_wlen(s) > mask->accurancy && mask->accurancy != -1) ? mask->accurancy : ft_wlen(s);

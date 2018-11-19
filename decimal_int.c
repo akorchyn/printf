@@ -19,8 +19,8 @@ int					ft_space_null_di(int n, t_mask *mask)
 	i = 0;
 	while (n > 0)
 	{
-		(mask->null == 0 || mask->accurancy > 0) ? write(1, " ", 1) : 0;
-		if (mask->null == 1 && (mask->accurancy == -1 || mask->accurancy == 0))
+		(mask->null == 0 || mask->accurancy > -1) ? write(1, " ", 1) : 0;
+		if (mask->null == 1 && mask->accurancy == -1)
 			write(1, "0", 1);
 		n--;
 		i++;

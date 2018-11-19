@@ -103,10 +103,10 @@ int			ft_printf(const char *format, ...)
 	return (len);
 }
 
-// int	main(void)
-// {	char	*b;
-// 	long	x = 4294967296;
-// 	printf("%i\n", printf("%#.x", 0));
-// 	fflush(stdout);
-// 	printf("%i\n", ft_printf("%#.x", 0));
-// }
+int	main(void)
+{	char	*b;
+	long	x = 4294967296;
+	printf("%i\n", printf("%0#10.0o", 12345));
+	fflush(stdout);
+	printf("%i\n", ft_printf("%0#10.0o", 12345));
+}
