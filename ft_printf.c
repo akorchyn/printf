@@ -103,11 +103,11 @@ int			ft_printf(const char *format, ...)
 	return (len);
 }
 
-// int	main(void)
-// {	char	*b;
-// 	long	x = 4294967296;
-// 	printf("%s\n", ft_itoa_base(NULL, 16, 0));
-// 	printf("%i\n", printf("%.0p, %.p", NULL, NULL));
-// 	fflush(stdout);
-// 	printf("%i\n", ft_printf("%.0p, %.p", NULL, NULL));
-// }
+int	main(void)
+{	char	*b;
+	long	x = 4294967296;
+	printf("%s\n", ft_itoa_base(NULL, 16, 0));
+	printf("%i\n", printf("% 4.5i", 42));
+	fflush(stdout);
+	printf("%i\n", ft_printf("% 4.5i", 42));
+}
