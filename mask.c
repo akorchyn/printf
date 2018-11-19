@@ -117,7 +117,7 @@ int					read_mask(char *str, t_mask **mask)
 	while (str[i] != 'c' && str[i] != 's' && str[i] != 'p' && str[i] != 'd'
 		&& str[i] != 'i' && str[i] != 'x' && str[i] != 'X' && str[i] != 'o'
 		&& str[i] != 'f' && str[i] != '%' && str[i] != 'u' && str[i] != '\\'
-		&& str[i] != '\\' && (str[i] < 7 || str[i] > 13) && str[i] != '\"' && str[i])
+		&& (str[i] < 7 || str[i] > 13) && str[i] != '\"' && str[i])
 		i++;
 	type(*mask, str, &i);
 	return (i);

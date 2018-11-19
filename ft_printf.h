@@ -61,7 +61,7 @@ int					octal(t_mask *mask, void *data);
 int					hexdecimal_up(t_mask *mask, void *data);
 int					hexdecimal_low(t_mask *mask, void *data);
 int					unsigned_decimal(t_mask *mask, void *data);
-
+int					u_null(t_mask *mask, void *data);
 
 int					ft_space_null(int n, t_mask *mask);
 int					ft_space_null_di(int n, t_mask *mask);

@@ -22,7 +22,7 @@ static int	ft_wlen(wchar_t *str)
 	return (i);
 }
 
-static int	null(t_mask *mask, void *data)
+static int	nill(t_mask *mask, void *data)
 {
 	if (!data)
 	{
@@ -38,7 +38,8 @@ int			pointer(t_mask *mask, void *data)
 	char			*str;
 	int				len;
 
-	str = ft_itoa_base((long)data, 16, 0);
+	CHECK(u_null(mask, data));
+	str = ft_itoa_base((unsigned long long)data, 16, 0);
 	len = ft_strlen(str);
 	if (mask->minus == 0 && mask->null == 0)
 		ft_space_null(mask->width - len - 3, mask);
@@ -81,7 +82,7 @@ int			ft_putstring(t_mask *mask, void *s)
 	int		len;
 
 	count = 0;
-	NILL(null(mask, s));
+	NILL(nill(mask, s));
 	if (mask->l == 1)
 	{
 		len = (ft_wlen(s) > mask->accurancy && mask->accurancy != -1) ? mask->accurancy : ft_wlen(s);

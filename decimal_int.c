@@ -42,6 +42,13 @@ static long long	convert(t_mask *mask, void *data)
 		return ((int)data);
 }
 
+static int			null(t_mask *mask, void *data)
+{
+	if ((long long)data == 0 && mask->accurancy == 0)
+		return (0);
+	return (-1);
+}
+
 int					decimal(t_mask *mask, void *data)
 {
 	int			len;
@@ -50,23 +57,29 @@ int					decimal(t_mask *mask, void *data)
 	int			nzeros;
 	int			nspaces;
 
+	count = null(mask, data);
+	CHECK(count);
 	num = ft_itoa(convert(mask, data));
 	len = ft_strlen(num);
 	nzeros = (mask->accurancy > len) ? mask->accurancy - len : 0;
-	(num[0] == '-' && mask->accurancy > 0) ? nzeros++ : 0;
+	(mask->accurancy > 0 && num[0] == '-') ? nzeros++ : 0;
 	nspaces = (mask->width > len + nzeros) ? mask->width - len - nzeros : 0;
-	(mask->space == 1 && num[0] != '-') ? nspaces++ : 0;
-	(mask->plus == 1 && convert(mask, data) > 0) ? nspaces-- : 0;
-	count = (mask->minus == 0) ? ft_space_null_di(nspaces, mask) : 0;
-	if (mask->plus == 1 && convert(mask, data) > 0)
+	if (mask->space == 1 && mask->plus == 0 && num[0] != '-' && mask->width == 0)
+		nspaces++;
+	(mask->plus == 1 && num[0] != '-') ? nspaces-- : 0;
+	if (mask->minus == 0 && (mask->null == 0 || nzeros > 0))
+		count += ft_space_null_di(nspaces, mask);
+	if (mask->plus == 1 && convert(mask, data) > -1)
 		count += write(1, "+", 1);
 	else if (mask->plus == 1 || num[0] == '-')
-		count += write(1, num, 1);
+		count += write(1, "-", 1);
 	(num[0] == '-') ? num++ : 0;
+	if (mask->minus == 0 && mask->null == 1 && nzeros == 0)
+		count += ft_space_null_di(nspaces, mask);
 	while (nzeros-- > 0)
 		count += write(1, "0", 1);
 	count += write(1, num, ft_strlen(num));
-	(ft_strlen(num) != len) ? free(num - 1) : free(num);
 	(mask->minus == 1) ? count += ft_space_null_di(nspaces, mask) : 0;
-	return (count);
+	(ft_strlen(num) == len) ? free(num) : free(num - 1);
+	return (count + 1);
 }
