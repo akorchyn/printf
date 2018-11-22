@@ -12,25 +12,17 @@
 
 #include "ft_printf.h"
 
-static int	ft_wlen(wchar_t *str)
-{
-	int		i;
-
-	i = 0;
-	while (*str++)
-		i++;
-	return (i);
-}
-
 static int	nill(t_mask *mask, void *data)
 {
 	int		len;
+	int		k;
 
 	len = 0;
 	if (!data)
 	{
-		len += ft_space_null_di(mask->width - 6, mask);
-		len += write(1, "(null)", (mask->accurancy > 0) ? mask->accurancy : 6);
+		k = (mask->accurancy > -1) ? mask->accurancy : 6;
+		len += ft_space_null(mask->width - k, mask);
+		len += write(1, "(null)", (mask->accurancy > -1) ? mask->accurancy : 6);
 		return (len);
 	}
 	return (0);
@@ -40,39 +32,33 @@ int			pointer(t_mask *mask, void *data)
 {
 	char			*str;
 	int				len;
+	int				count;
 
-	CHECK(u_null(mask, data));
+	count = u_null(mask, data);
+	CHECK(count);
 	str = ft_itoa_base((unsigned long long)data, 16, 0);
 	len = ft_strlen(str);
 	if (mask->minus == 0 && mask->null == 0)
-		ft_space_null(mask->width - len - 2, mask);
-	write(1, "0x", 2);
+		count += ft_space_null(mask->width - len - 2, mask);
+	count += write(1, "0x", 2);
 	if (mask->minus == 0 && mask->null == 1)
-		ft_space_null(mask->width - len - 2, mask);
-	write(1, str, len);
-	(mask->minus == 1) ? ft_space_null(mask->width - len - 2, mask) : 0;
+		count += ft_space_null(mask->width - len - 2, mask);
+	while (mask->accurancy-- > len)
+		count += write(1, "0", 1);
+	count += write(1, str, len);
+	if (mask->minus == 1)
+		count += ft_space_null(mask->width - len - 2, mask);
 	free(str);
-	if (mask->width > len)
-		return (mask->width);
-	return (len + 2);
+	return (count + 1);
 }
 
 int			ft_putch(t_mask *mask, void *s)
 {
 	char	c;
-	wchar_t	wchar_c;
 
 	(mask->minus == 0) ? ft_space_null(mask->width - 1, mask) : 0;
-	if (mask->l == 0)
-	{
-		c = (char)s;
-		write(1, &c, 1);
-	}
-	else
-	{
-		wchar_c = (wchar_t)s;
-		write(1, &wchar_c, sizeof(wchar_t));
-	}
+	c = (char)s;
+	write(1, &c, 1);
 	(mask->minus == 1) ? ft_space_null(mask->width - 1, mask) : 0;
 	if (mask->width == 0)
 		return (1);
@@ -86,23 +72,12 @@ int			ft_putstring(t_mask *mask, void *s)
 
 	count = nill(mask, s);
 	NILL(count);
-	if (mask->l == 1)
-	{
-		len = (ft_wlen(s) > mask->accurancy && mask->accurancy != -1) ? mask->accurancy : ft_wlen(s);
-		if (mask->minus == 0)
-			count += ft_space_null(mask->width - len, mask);
-		count += write(1, s, len);
-		if (mask->minus == 1)
-			count += ft_space_null(mask->width - len, mask);
-	}
-	else
-	{
-		len = (ft_strlen(s) > mask->accurancy && mask->accurancy != -1) ? mask->accurancy : ft_strlen(s);
-		if (mask->minus == 0)
-			count += ft_space_null(mask->width - len, mask);
-		count += write(1, s, len);
-		if (mask->minus == 1)
-			count += ft_space_null(mask->width - len, mask);
-	}
+	len = (ft_strlen(s) > mask->accurancy && mask->accurancy != -1) ?
+	mask->accurancy : ft_strlen(s);
+	if (mask->minus == 0)
+		count += ft_space_null(mask->width - len, mask);
+	count += write(1, s, len);
+	if (mask->minus == 1)
+		count += ft_space_null(mask->width - len, mask);
 	return (count);
 }

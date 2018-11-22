@@ -26,6 +26,8 @@ static t_mask		*new_t_mask(void)
 	new->l_big = 0;
 	new->null = 0;
 	new->space = 0;
+	new->j = 0;
+	new->z = 0;
 	new->plus = 0;
 	new->minus = 0;
 	new->sharp = 0;
@@ -39,10 +41,11 @@ static void			flags(t_mask *mask, char *str, int *i)
 	while (str[*i] != 'c' && str[*i] != 's' && str[*i] != 'p' && str[*i] != 'd'
 		&& str[*i] != 'i' && str[*i] != 'x' && str[*i] != 'X' && str[*i] != 'o'
 		&& str[*i] != 'f' && str[*i] != '%' && str[*i] != '.' && str[*i] != 'u'
-		&& (str[*i] < '1' || str[*i] > '9') && str[*i]
+		&& (str[*i] < '1' || str[*i] > '9') && str[*i] && str[*i] != 'j'
 		&& str[*i] != 'l' && str[*i] != 'h' && str[*i] != 'L' && str[*i] != '\\'
-		&& str[*i] != '\"' && str[*i] != '\?'
-		&& (str[*i] < 7 || str[*i] > 13))
+		&& str[*i] != '\"' && str[*i] != '\?' && str[*i] != 'z'
+		&& (str[*i] < 7 || str[*i] > 13) && str[*i] != 'D' && str[*i] != 'O'
+		&& str[*i] != 'F' && str[*i] != 'U')
 	{
 		(str[*i] == '0') ? mask->null = 1 : 0;
 		(str[*i] == '+') ? mask->plus = 1 : 0;
@@ -57,6 +60,8 @@ static void			flags(t_mask *mask, char *str, int *i)
 
 static void			size(t_mask *mask, char *str, int *i)
 {
+	(str[*i] == 'j') ? mask->j = 1 : 0;
+	(str[*i] == 'z') ? mask->z = 1 : 0;
 	if (str[*i] == 'h')
 	{
 		*i = *i + 1;
@@ -69,13 +74,15 @@ static void			size(t_mask *mask, char *str, int *i)
 		*i = *i + 1;
 		mask->l = (str[*i] == 'l') ? 0 : 1;
 		mask->ll = (str[*i] == 'l') ? 1 : 0;
-		(str[*i] == 'h') ? *i = *i + 1 : 0;
+		(str[*i] == 'l') ? *i = *i + 1 : 0;
 	}
 	else if (str[*i] == 'L')
 	{
 		mask->l_big = 1;
 		*i = *i + 1;
 	}
+	(str[*i] == 'j') ? (*i)++ : 0;
+	(str[*i] == 'z') ? (*i)++ : 0;
 }
 
 static void			type(t_mask *mask, char *str, int *i)
@@ -83,13 +90,16 @@ static void			type(t_mask *mask, char *str, int *i)
 	(str[*i] == 'c') ? mask->type = CHAR : 0;
 	(str[*i] == 's') ? mask->type = STRING : 0;
 	(str[*i] == 'p') ? mask->type = POINTER : 0;
-	(str[*i] == 'd') ? mask->type = DECIMAL : 0;
+	(str[*i] == 'd' || str[*i] == 'D') ? mask->type = DECIMAL : 0;
+	(str[*i] == 'D') ? mask->l = 1 : 0;
 	(str[*i] == 'i') ? mask->type = INT : 0;
-	(str[*i] == 'o') ? mask->type = U_OCTAL : 0;
-	(str[*i] == 'u') ? mask->type = U_DECIMAL : 0;
+	(str[*i] == 'o' || str[*i] == 'O') ? mask->type = U_OCTAL : 0;
+	(str[*i] == 'O') ? mask->l = 1 : 0;
+	(str[*i] == 'u' || str[*i] == 'U') ? mask->type = U_DECIMAL : 0;
+	(str[*i] == 'U') ? mask->l = 1 : 0;
 	(str[*i] == 'x') ? mask->type = U_HEX_LOWER : 0;
 	(str[*i] == 'X') ? mask->type = U_HEX_UPPER : 0;
-	(str[*i] == 'f') ? mask->type = FLOAT : 0;
+	(str[*i] == 'f' || str[*i] == 'F') ? mask->type = FLOAT : 0;
 	(str[*i] == '%') ? mask->type = PERCENT : 0;
 	(mask->type != BAD_TYPE) ? *i = *i + 1 : 0;
 }
@@ -102,8 +112,7 @@ int					read_mask(char *str, t_mask **mask)
 	if (!(*mask = new_t_mask()))
 		return (0);
 	flags(*mask, str, &i);
-	if ((ft_isdigit(str[i])))
-		(*mask)->width = ft_atoi(str + i);
+	(ft_isdigit(str[i]) == 1) ? (*mask)->width = ft_atoi(str + i) : 0;
 	while (ft_isdigit(str[i]))
 		i++;
 	if (str[i] == '.')
@@ -116,8 +125,9 @@ int					read_mask(char *str, t_mask **mask)
 	size(*mask, str, &i);
 	while (str[i] != 'c' && str[i] != 's' && str[i] != 'p' && str[i] != 'd'
 		&& str[i] != 'i' && str[i] != 'x' && str[i] != 'X' && str[i] != 'o'
-		&& str[i] != 'f' && str[i] != '%' && str[i] != 'u' && str[i] != '\\'
-		&& (str[i] < 7 || str[i] > 13) && str[i] != '\"' && str[i])
+		&& str[i] != 'f' && str[i] != '%' && str[i] != 'u' && str[i] != 'F'
+		&& (str[i] < 7 || str[i] > 13) && str[i] != 'U' && str[i]
+		&& str[i] == 'D' && str[i] == 'O' && str[i] == '\'' && str[i] == '\"')
 		i++;
 	type(*mask, str, &i);
 	return (i);

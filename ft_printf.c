@@ -6,47 +6,17 @@
 /*   By: akorchyn <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/13 11:52:03 by akorchyn          #+#    #+#             */
-/*   Updated: 2018/11/19 16:42:48 by akorchyn         ###   ########.fr       */
+/*   Updated: 2018/11/13 11:52:05 by akorchyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-#include <stdio.h>
 
-int			ft_space_null(int n, t_mask *mask)
+void		**update(void)
 {
-	int		i;
+	void		**funcs;
 
-	i = 0;
-	while (n > 0)
-	{
-		(mask->null == 0) ? write(1, " ", 1) : 0;
-		(mask->null == 1) ? write(1, "0", 1) : 0;
-		n--;
-		i++;
-	}
-	return (i);
-}
-
-int			bad_type(t_mask *mask, void *s)
-{
-	if (!s)
-		ft_space_null(mask->width, mask);
-	return ((mask->width > 0) ? mask->width - 1 : 0);
-}
-
-int		percent(t_mask *mask, void *data)
-{
-	if (!data)
-		return (ft_putch(mask, (void *)'%'));
-	return (0);	
-}
-
-t_functions	*update(void)
-{
-	t_functions	*funcs;
-
-	funcs = (t_functions *)malloc(sizeof(t_functions) * 13);
+	funcs = (void **)malloc(sizeof(void *) * 13);
 	funcs[CHAR] = ft_putch;
 	funcs[STRING] = ft_putstring;
 	funcs[BAD_TYPE] = bad_type;
@@ -58,18 +28,27 @@ t_functions	*update(void)
 	funcs[U_DECIMAL] = unsigned_decimal;
 	funcs[U_HEX_LOWER] = hexdecimal_low;
 	funcs[U_HEX_UPPER] = hexdecimal_up;
+	funcs[FLOAT] = print_float;
 	return (funcs);
 }
 
-int			all_oper(t_mask *mask, void *data)
+int			all_oper(t_mask *mask, va_list ap, void **funcs)
 {
-	t_functions	*funcs;
-	int			len;
+	int		(*func)(t_mask *, void *);
+	int		(*floats)(t_mask *, long double, int);
+	int		len;
 
 	len = 0;
-	funcs = update();
-	len += funcs[mask->type](mask, data);
-	free(funcs);
+	(mask->width < -1) ? mask->width = 0 : 0;
+	(mask->type != FLOAT) ? func = funcs[mask->type] : 0;
+	(mask->type == FLOAT) ? floats = funcs[mask->type] : 0;
+	if (mask->type == BAD_TYPE || mask->type == PERCENT)
+		len += func(mask, NULL);
+	else if (mask->type == FLOAT)
+		len += (mask->l_big) ? floats(mask, va_arg(ap, long double), 0)
+	: floats(mask, va_arg(ap, double), 0);
+	else
+		len += func(mask, va_arg(ap, void *));
 	return (len);
 }
 
@@ -77,21 +56,20 @@ int			ft_printf(const char *format, ...)
 {
 	va_list		ap;
 	t_mask		*mask;
+	void		**funcs;
 	int			i;
 	int			len;
 
 	i = -1;
 	len = 0;
+	funcs = update();
 	va_start(ap, format);
 	while (format[++i])
 	{
 		if (format[i] == '%')
 		{
 			i += read_mask(((char *)format) + i, &mask);
-			if (mask->type == BAD_TYPE || mask->type == PERCENT)
-				len += all_oper(mask, NULL);
-			else
-				len += all_oper(mask, va_arg(ap, void *));
+			len += all_oper(mask, ap, funcs);
 			free(mask);
 			(i > 0) ? i-- : 0;
 			continue ;
@@ -99,7 +77,14 @@ int			ft_printf(const char *format, ...)
 		len += write(1, &(format[i]), 1);
 	}
 	va_end(ap);
-	//system("leaks a.out");
+	free(funcs);
 	return (len);
 }
 
+//int	main(void)
+//{	char	*b;
+//	long	x = 4294967296;
+//	printf("%i\n", printf("{% 03d}", 0));
+//	fflush(stdout);
+//	printf("%i\n", ft_printf("{% 03d}", 0));
+//}

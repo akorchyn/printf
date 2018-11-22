@@ -16,34 +16,17 @@ static unsigned long long	converter(t_mask *mask, void *data)
 {
 	if (mask->l == 1)
 		return ((unsigned long)(data));
-	if (mask->ll == 1)
+	else if (mask->ll == 1)
 		return ((unsigned long long)data);
-	if (mask->h == 1)
+	else if (mask->h == 1)
 		return ((unsigned short)data);
-	if (mask->hh == 1)
+	else if (mask->hh == 1)
 		return ((unsigned char)data);
+	else if (mask->z == 1)
+		return ((size_t)data);
+	else if (mask->j == 1)
+		return ((uintmax_t)data);
 	return ((unsigned int)data);
-}
-
-int							u_null(t_mask *mask, void *data)
-{
-	if ((unsigned long long)data == 0 && mask->accurancy == 0)
-	{
-		if (mask->sharp == 1 && mask->type == U_OCTAL && mask->width > -1)
-		{
-			write(1, "0", 1);
-			mask->width--;
-			return (1);
-		}
-		if (mask->type == POINTER && mask->width > -1)
-		{
-			write(1, "0x", 2);
-			mask->width -= 2;
-			return (2);
-		}
-		return (0);
-	}
-	return (-1);
 }
 
 int							octal(t_mask *mask, void *data)

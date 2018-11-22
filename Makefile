@@ -3,7 +3,7 @@
 NAME = libftprintf.a
 
 SRC = ft_printf.c csp.c decimal_int.c ft_isdigit.c ft_itoa.c itoa_base.c \
-		ft_strlen.c mask.c unsigned.c ft_atoi.c
+		ft_strlen.c mask.c unsigned.c ft_atoi.c float.c for_all.c
 
 SRO = $(SRC:.c=.o)
 
