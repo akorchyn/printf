@@ -40,32 +40,33 @@ static int			null(t_mask *mask, void *data)
 static int			plus_minus(t_mask *mask, char *num)
 {
 	if (mask->plus && num[0] != '-')
-		return (write(1, "+", 1));
+		return ((int)write(1, "+", 1));
 	if (num[0] == '-')
-		return (write(1, "-", 1));
+		return ((int)write(1, "-", 1));
 	return (0);
 }
 
-static int			print_zero(int n)
+static int			spacebeforenull(t_mask *mask, int nspaces)
 {
 	int count;
 
 	count = 0;
-	while (n-- > 0)
-		count += write(1, "0", 1);
+	(mask->space) ? count += write(1, " ", 1) : 0;
+	(mask->space) ? nspaces-- : 0;
+	count += ft_space_null_di(nspaces, mask);
 	return (count);
 }
 
 int					decimal(t_mask *mask, void *data)
 {
 	int			len;
-	int			count;
+	int			n;
 	char		*num;
 	int			nzeros;
 	int			nspaces;
 
-	count = null(mask, data);
-	CHECK(count);
+	n = null(mask, data);
+	CHECK(n);
 	num = ft_itoa(convert(mask, data));
 	len = (num[0] == '-') ? ft_strlen(num) - 1 : ft_strlen(num);
 	nzeros = (mask->accurancy > len) ? mask->accurancy - len : 0;
@@ -73,17 +74,14 @@ int					decimal(t_mask *mask, void *data)
 	(!nspaces && mask->space) ? nspaces++ : 0;
 	(mask->plus && num[0] != '-') ? nspaces-- : 0;
 	(num[0] == '-') ? nspaces-- : 0;
-	((!mask->null || nzeros) && !mask->minus) ? count += ft_space_null_di(nspaces, mask) : 0;
-	count += plus_minus(mask, num);
+	if ((!mask->null || nzeros) && !mask->minus)
+		n += ft_space_null_di(nspaces, mask);
+	n += plus_minus(mask, num);
 	if (mask->null && !nzeros && !mask->minus)
-	{
-		(mask->space) ? count += write(1, " ", 1) : 0;
-		(mask->space) ? nspaces-- : 0;
-		count += ft_space_null_di(nspaces, mask);
-	}
-	count += print_zero(nzeros);
-	count += (num[0] == '-') ? write(1, num + 1, len) : write(1, num, len);
-	(mask->minus) ? count += ft_space_null_di(nspaces, mask) : 0;
+		n += spacebeforenull(mask, nspaces);
+	n += print_zero(nzeros);
+	n += (num[0] == '-') ? write(1, num + 1, len) : write(1, num, len);
+	(mask->minus) ? n += ft_space_null_di(nspaces, mask) : 0;
 	free(num);
-	return (count + 1);
+	return (n + 1);
 }

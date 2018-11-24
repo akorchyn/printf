@@ -35,14 +35,14 @@
 #include "ft_printf.h"
 
 //Test switchers - comment some of then to turn the tests off
-//#define	CHAR		//aka chars
-//#define	PER			//aka percent(%)
-//#define	NUM			//aka numbers
-//#define	PTR			//aka pointers
-//#define	STRANGE		//aka undefined tests
-//#define STR			//aka strings
-//#define WSTR		//aka wide strings
-//#define	LENGTH		//aka hh, h, l ,ll , z, j
+#define	CHAR		//aka chars
+#define	PER			//aka percent(%)
+#define	NUM			//aka numbers
+#define	PTR			//aka pointers
+#define	STRANGE		//aka undefined tests
+#define STR			//aka strings
+#define WSTR		//aka wide strings
+#define	LENGTH		//aka hh, h, l ,ll , z, j
 
 int	main(void)
 {

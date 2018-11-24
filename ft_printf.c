@@ -16,8 +16,10 @@ void		**update(void)
 {
 	void		**funcs;
 
-	funcs = (void **)malloc(sizeof(void *) * 13);
+	funcs = (void **)malloc(sizeof(void *) * 15);
 	funcs[CHAR] = ft_putch;
+	funcs[UNICODE_CH] = ft_putch;
+	funcs[UNICODE_STR] = ft_putstring;
 	funcs[STRING] = ft_putstring;
 	funcs[BAD_TYPE] = bad_type;
 	funcs[POINTER] = pointer;
@@ -76,15 +78,7 @@ int			ft_printf(const char *format, ...)
 		}
 		len += write(1, &(format[i]), 1);
 	}
-	va_end(ap);
 	free(funcs);
+	va_end(ap);
 	return (len);
 }
-
-//int	main(void)
-//{	char	*b;
-//	long	x = 4294967296;
-//	printf("%i\n", printf("{% 03d}", 0));
-//	fflush(stdout);
-//	printf("%i\n", ft_printf("{% 03d}", 0));
-//}

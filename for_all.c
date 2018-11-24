@@ -27,6 +27,16 @@ int		ft_space_null(int n, t_mask *mask)
 	return (i);
 }
 
+int		print_zero(int n)
+{
+	int count;
+
+	count = 0;
+	while (n-- > 0)
+		count += write(1, "0", 1);
+	return (count);
+}
+
 int		ft_space_null_di(int n, t_mask *mask)
 {
 	int		i;
@@ -62,18 +72,4 @@ int		u_null(t_mask *mask, void *data)
 		return (0);
 	}
 	return (-1);
-}
-
-int		bad_type(t_mask *mask, void *s)
-{
-	if (!s)
-		ft_space_null(mask->width - 1, mask);
-	return ((mask->width > 0) ? mask->width - 1 : 0);
-}
-
-int		percent(t_mask *mask, void *data)
-{
-	if (!data)
-		return (ft_putch(mask, (void *)'%'));
-	return (0);
 }

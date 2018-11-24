@@ -30,10 +30,14 @@
 # define U_HEX_UPPER 8
 # define FLOAT 9
 # define PERCENT 10
-# define BAD_TYPE 11
+# define UNICODE_CH 11
+# define UNICODE_STR 12
+# define BAD_TYPE 13
 
 # define CHECK(x) if (x != -1) return (ft_space_null_di(mask->width, mask) + x);
 # define NILL(x) if (x != 0) return (x);
+
+int					ft_printf(const char *format, ...);
 
 /*
 **	l_big --> L
@@ -73,14 +77,22 @@ int					hexdecimal_low(t_mask *mask, void *data);
 int					unsigned_decimal(t_mask *mask, void *data);
 int					percent(t_mask *mask, void *data);
 int					print_float(t_mask *mask, long double data, int count);
+int 				print_unicode(wchar_t c);
 
 /*
 **	Вспомогательные функции для функций вывода.
+**	ft_space_null выводит нули, либо пробелы в
+**  в зависимости от флага 0 и ширины.
+**  null_di учитывает еще точность поэтому иногда
+**  флаг ноль игнорируется.
+**  Print zero выводит n нулей
+**  u_null проверяет на ноль и точность 0.
 */
 
 int					ft_space_null(int n, t_mask *mask);
 int					ft_space_null_di(int n, t_mask *mask);
 int					u_null(t_mask *mask, void *data);
+int					print_zero(int n);
 
 /*
 **	Читает маску %.
@@ -89,14 +101,18 @@ int					u_null(t_mask *mask, void *data);
 int					read_mask(char *str, t_mask **mask);
 
 /*
-**	Измененные (или нет) библиотечные функции.
+** Измененные (или нет) библиотечные функции.
+** strlen не изменен, isdigit также.
+** ibase = Itoa_base работает только с
+** положительными цифрами.
+** itoa приведен к типу __int 128.
 */
 
 int					ft_strlen(const char *str);
 int					ft_isdigit(int c);
-char				*ft_itoa_base(unsigned long long int nb,
-	int base, int let_case);
+char				*ibase(__uint128_t nb, int base, int let_case);
 int					ft_atoi(const char *str);
-char				*ft_itoa(long long n);
+char				*ft_itoa(__int128 n);
+char 				*ft_strrev(char *str);
 
 #endif

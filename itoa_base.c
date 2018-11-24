@@ -12,7 +12,7 @@
 
 #include "ft_printf.h"
 
-static char	translate(int n, int let_case)
+static char		translate(int n, int let_case)
 {
 	if (n < 10)
 		return (n + '0');
@@ -22,54 +22,29 @@ static char	translate(int n, int let_case)
 		return ('A' + (n - 10));
 }
 
-static char	*all_op(unsigned long long num, int len, int base, int let_case)
+char			*ibase(__uint128_t nb, int base, int let_case)
 {
-	char	*str;
-	int		i;
-	int		j;
-	char	temp;
+	char			*str;
+	char			*start;
+	__uint128_t		tmp;
+	int				nblen;
 
-	j = 0;
-	i = 0;
-	str = malloc(sizeof(char) * (len + 1));
-	while (num > 0)
+	nblen = (!nb) ? 1 : 0;
+	tmp = nb;
+	while (tmp > 0)
 	{
-		str[i++] = translate(num % base, let_case);
-		num = num / base;
+		tmp /= base;
+		nblen++;
 	}
-	str[i--] = '\0';
-	while (j < i)
+	str = malloc(sizeof(char) * (nblen + 1));
+	start = str;
+	while (nblen-- > 0)
 	{
-		temp = str[j];
-		str[j++] = str[i];
-		str[i--] = temp;
+		*str = translate(nb % base, let_case);
+		str++;
+		nb = nb / base;
 	}
-	return (str);
-}
-
-char		*ft_itoa_base(unsigned long long nb, int base, int let_case)
-{
-	char					*str;
-	int						len;
-	unsigned long long		num;
-
-	num = nb;
-	len = 0;
-	while (num > 0)
-	{
-		len++;
-		num = num / base;
-	}
-	if (nb == 0)
-	{
-		str = malloc(sizeof(char) * 2);
-		str[0] = '0';
-		str[1] = '\0';
-		return (str);
-	}
-	if (base > 1 && base < 17 && nb > 0)
-		str = all_op(nb, len, base, let_case);
-	else
-		return (NULL);
-	return (str);
+	*str = '\0';
+	ft_strrev(start);
+	return (start);
 }

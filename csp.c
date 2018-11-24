@@ -36,7 +36,7 @@ int			pointer(t_mask *mask, void *data)
 
 	count = u_null(mask, data);
 	CHECK(count);
-	str = ft_itoa_base((unsigned long long)data, 16, 0);
+	str = ibase((unsigned long long)data, 16, 0);
 	len = ft_strlen(str);
 	if (mask->minus == 0 && mask->null == 0)
 		count += ft_space_null(mask->width - len - 2, mask);
@@ -54,15 +54,22 @@ int			pointer(t_mask *mask, void *data)
 
 int			ft_putch(t_mask *mask, void *s)
 {
-	char	c;
+	int n;
+	char c;
 
-	(mask->minus == 0) ? ft_space_null(mask->width - 1, mask) : 0;
-	c = (char)s;
-	write(1, &c, 1);
-	(mask->minus == 1) ? ft_space_null(mask->width - 1, mask) : 0;
-	if (mask->width == 0)
-		return (1);
-	return (mask->width);
+	n = 0;
+	if (MB_CUR_MAX == 1 && (wchar_t)s > 255)
+		return (-1);
+	(mask->minus == 0) ? n += ft_space_null(mask->width - 1, mask) : 0;
+	if (mask->l == 1 || mask->type == UNICODE_CH)
+		n += print_unicode((wchar_t )s);
+	else
+	{
+		c = (char) s;
+		n += write(1, &s, 1);
+	}
+	(mask->minus == 1) ? n += ft_space_null(mask->width - 1, mask) : 0;
+	return (n);
 }
 
 int			ft_putstring(t_mask *mask, void *s)
@@ -70,13 +77,23 @@ int			ft_putstring(t_mask *mask, void *s)
 	int		count;
 	int		len;
 
+	if (MB_CUR_MAX == 1 && (wchar_t)s > 255)
+		return (-1);
 	count = nill(mask, s);
 	NILL(count);
 	len = (ft_strlen(s) > mask->accurancy && mask->accurancy != -1) ?
 	mask->accurancy : ft_strlen(s);
 	if (mask->minus == 0)
 		count += ft_space_null(mask->width - len, mask);
-	count += write(1, s, len);
+	if (mask->l == 1 || mask->type == UNICODE_STR)
+	{
+		len = -1;
+		while (((wchar_t *)s)[++len])
+			if ((count += print_unicode(((wchar_t *)s)[len])) == -1)
+				return (-1);
+	}
+	else
+		count += write(1, s, len);
 	if (mask->minus == 1)
 		count += ft_space_null(mask->width - len, mask);
 	return (count);

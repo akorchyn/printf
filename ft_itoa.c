@@ -12,7 +12,7 @@
 
 #include "ft_printf.h"
 
-static char	*additional(unsigned long long un, long long n, int len_arr)
+static char	*additional(__int128 un, __int128 n, int len_arr)
 {
 	char			*str;
 	char			temp;
@@ -41,11 +41,11 @@ static char	*additional(unsigned long long un, long long n, int len_arr)
 	return (str);
 }
 
-char		*ft_itoa(long long n)
+char		*ft_itoa(__int128 n)
 {
 	char				*ans;
-	unsigned long long	un;
-	unsigned long long	to_count;
+	__int128			un;
+	__int128			to_count;
 	int					i;
 
 	i = 1;
