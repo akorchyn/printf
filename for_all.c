@@ -37,6 +37,30 @@ int		print_zero(int n)
 	return (count);
 }
 
+t_mask	*new_t_mask(void)
+{
+	t_mask		*new;
+
+	if (!(new = (t_mask *)malloc(sizeof(t_mask))))
+		return (NULL);
+	new->type = BAD_TYPE;
+	new->h = 0;
+	new->hh = 0;
+	new->l = 0;
+	new->ll = 0;
+	new->l_big = 0;
+	new->null = 0;
+	new->space = 0;
+	new->j = 0;
+	new->z = 0;
+	new->plus = 0;
+	new->minus = 0;
+	new->sharp = 0;
+	new->width = 0;
+	new->accurancy = -1;
+	return (new);
+}
+
 int		ft_space_null_di(int n, t_mask *mask)
 {
 	int		i;
@@ -63,9 +87,10 @@ int		u_null(t_mask *mask, void *data)
 			mask->width--;
 			return (1);
 		}
-		if (mask->type == POINTER && mask->width > -1)
+		if ((mask->type == POINTER || (mask->type == BINARY && mask->sharp))
+		&& mask->width > -1)
 		{
-			write(1, "0x", 2);
+			(mask->type == POINTER) ? write(1, "0x", 2) : write(1, "0b", 2);
 			mask->width -= 2;
 			return (2);
 		}

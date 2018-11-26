@@ -24,8 +24,8 @@
 
 __int128		floating_value(int accurancy, long double data)
 {
-	__uint128_t	c;
-	__uint128_t	k;
+	__uint128_t		c;
+	__uint128_t		k;
 
 	k = 1;
 	c = data;

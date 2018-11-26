@@ -12,7 +12,7 @@
 
 #include "ft_printf.h"
 
-static long long	convert(t_mask *mask, void *data)
+static long long	convert_sign(t_mask *mask, void *data)
 {
 	if (mask->l == 1)
 		return ((long)data);
@@ -67,7 +67,7 @@ int					decimal(t_mask *mask, void *data)
 
 	n = null(mask, data);
 	CHECK(n);
-	num = ft_itoa(convert(mask, data));
+	num = ft_itoa(convert_sign(mask, data));
 	len = (num[0] == '-') ? ft_strlen(num) - 1 : ft_strlen(num);
 	nzeros = (mask->accurancy > len) ? mask->accurancy - len : 0;
 	nspaces = (mask->width > len + nzeros) ? mask->width - len - nzeros : 0;

@@ -4,7 +4,7 @@ NAME = libftprintf.a
 
 SRC = ft_printf.c csp.c decimal_int.c ft_isdigit.c ft_itoa.c itoa_base.c \
 		ft_strlen.c mask.c unsigned.c ft_atoi.c float.c for_all.c badtype_perc.c\
-		ft_strrev.c unicode.c
+		ft_strrev.c unicode.c printunicode.c binary_memory.c
 
 SRO = $(SRC:.c=.o)
 

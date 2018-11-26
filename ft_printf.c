@@ -18,19 +18,20 @@ void		**update(void)
 
 	funcs = (void **)malloc(sizeof(void *) * 15);
 	funcs[CHAR] = ft_putch;
-	funcs[UNICODE_CH] = ft_putch;
-	funcs[UNICODE_STR] = ft_putstring;
+	funcs[UNICODE_CH] = put_un_ch;
+	funcs[UNICODE_STR] = put_un_string;
 	funcs[STRING] = ft_putstring;
 	funcs[BAD_TYPE] = bad_type;
 	funcs[POINTER] = pointer;
 	funcs[PERCENT] = percent;
 	funcs[DECIMAL] = decimal;
-	funcs[INT] = decimal;
 	funcs[U_OCTAL] = octal;
 	funcs[U_DECIMAL] = unsigned_decimal;
 	funcs[U_HEX_LOWER] = hexdecimal_low;
 	funcs[U_HEX_UPPER] = hexdecimal_up;
 	funcs[FLOAT] = print_float;
+	funcs[BINARY] = print_binary;
+	funcs[MEMORY] = print_memory;
 	return (funcs);
 }
 
@@ -41,6 +42,11 @@ int			all_oper(t_mask *mask, va_list ap, void **funcs)
 	int		len;
 
 	len = 0;
+	(mask->width < 0) ? mask->minus = 1 : 0;
+	(mask->width < 0) ? mask->width *= -1 : 0;
+	(mask->accurancy < -1) ? mask->accurancy = -1 : 0;
+	(mask->l && mask->type == CHAR) ? mask->type = UNICODE_CH : 0;
+	(mask->l && mask->type == STRING) ? mask->type = UNICODE_STR : 0;
 	(mask->width < -1) ? mask->width = 0 : 0;
 	(mask->type != FLOAT) ? func = funcs[mask->type] : 0;
 	(mask->type == FLOAT) ? floats = funcs[mask->type] : 0;
@@ -70,7 +76,7 @@ int			ft_printf(const char *format, ...)
 	{
 		if (format[i] == '%')
 		{
-			i += read_mask(((char *)format) + i, &mask);
+			i += read_mask(((char *)format) + i, &mask, &ap);
 			len += all_oper(mask, ap, funcs);
 			free(mask);
 			(i > 0) ? i-- : 0;

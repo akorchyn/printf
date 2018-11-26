@@ -19,9 +19,9 @@
 
 #define MASK 0b111111
 
-int 		active_bits(wchar_t c)
+int				active_bits(wchar_t c)
 {
-	int i;
+	int		i;
 
 	i = 0;
 	while (c > 0)
@@ -32,10 +32,10 @@ int 		active_bits(wchar_t c)
 	return (i);
 }
 
-int 		first_num(wchar_t c, int bits)
+static int		first_num(wchar_t c, int bits)
 {
-	int bit;
-	int shift;
+	int		bit;
+	int		shift;
 
 	bit = 0;
 	(bits > 7) ? bit = TWO_BIT : 0;
@@ -45,24 +45,19 @@ int 		first_num(wchar_t c, int bits)
 	return (c >> shift | bit);
 }
 
-int 		others(wchar_t c, int shift)
+int				print_unicode(wchar_t c)
 {
-	return (OTHER_BIT | (MASK & (c >> shift)));
-}
-
-int 		print_unicode(wchar_t c)
-{
-	int 			bits;
-	unsigned char 	ch[4];
-	int 			i;
+	int				bits;
+	unsigned char	ch[4];
+	int				i;
 
 	bits = active_bits(c);
 	i = 0;
 	ch[0] = (char)c;
 	(bits > 7) ? ch[i++] = first_num(c, bits) : 0;
-	(bits > 16) ? ch[i++] = others(c, 12) : 0;
-	(bits > 11) ? ch[i++] = others(c, 6) : 0;
-	(bits > 7) ? ch[i++] = others(c, 0) : 0;
+	(bits > 16) ? ch[i++] = OTHER_BIT | (MASK & (c >> 12)) : 0;
+	(bits > 11) ? ch[i++] = OTHER_BIT | (MASK & (c >> 6)) : 0;
+	(bits > 7) ? ch[i++] = OTHER_BIT | (MASK & c) : 0;
 	(i == 0) ? i = 1 : 0;
 	write(1, ch, i);
 	return (i);

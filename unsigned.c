@@ -12,7 +12,7 @@
 
 #include "ft_printf.h"
 
-static unsigned long long	converter(t_mask *mask, void *data)
+unsigned long long			converter(t_mask *mask, void *data)
 {
 	if (mask->l == 1)
 		return ((unsigned long)(data));

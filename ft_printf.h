@@ -23,19 +23,20 @@
 # define STRING 1
 # define POINTER 2
 # define DECIMAL 3
-# define INT 4
-# define U_OCTAL 5
-# define U_DECIMAL 6
-# define U_HEX_LOWER 7
-# define U_HEX_UPPER 8
-# define FLOAT 9
-# define PERCENT 10
-# define UNICODE_CH 11
-# define UNICODE_STR 12
-# define BAD_TYPE 13
+# define U_OCTAL 4
+# define U_DECIMAL 5
+# define U_HEX_LOWER 6
+# define U_HEX_UPPER 7
+# define FLOAT 8
+# define PERCENT 9
+# define UNICODE_CH 10
+# define UNICODE_STR 11
+# define BINARY 12
+# define MEMORY 13
+# define BAD_TYPE 14
 
 # define CHECK(x) if (x != -1) return (ft_space_null_di(mask->width, mask) + x);
-# define NILL(x) if (x != 0) return (x);
+# define NILL(x) if (x != -1) return (x);
 
 int					ft_printf(const char *format, ...);
 
@@ -77,7 +78,10 @@ int					hexdecimal_low(t_mask *mask, void *data);
 int					unsigned_decimal(t_mask *mask, void *data);
 int					percent(t_mask *mask, void *data);
 int					print_float(t_mask *mask, long double data, int count);
-int 				print_unicode(wchar_t c);
+int					put_un_ch(t_mask *mask, void *s);
+int					put_un_string(t_mask *mask, void *s);
+int					print_binary(t_mask *mask, void *data);
+int					print_memory(t_mask *mask, void *data);
 
 /*
 **	Вспомогательные функции для функций вывода.
@@ -87,18 +91,26 @@ int 				print_unicode(wchar_t c);
 **  флаг ноль игнорируется.
 **  Print zero выводит n нулей
 **  u_null проверяет на ноль и точность 0.
+**  active_bits считает активные биты.
+**  print_unicode выводит юникодовский символ.
+**  new_t_mask - инициализация и выделение памяти
 */
 
 int					ft_space_null(int n, t_mask *mask);
 int					ft_space_null_di(int n, t_mask *mask);
 int					u_null(t_mask *mask, void *data);
 int					print_zero(int n);
+int					active_bits(wchar_t c);
+int					print_unicode(wchar_t c);
+int					nill(t_mask *mask, void *data);
+t_mask				*new_t_mask(void);
+unsigned long long	converter(t_mask *mask, void *data);
 
 /*
-**	Читает маску %.
+**	Читает маску (%).
 */
 
-int					read_mask(char *str, t_mask **mask);
+int					read_mask(char *str, t_mask **mask, va_list *ap);
 
 /*
 ** Измененные (или нет) библиотечные функции.
@@ -113,6 +125,6 @@ int					ft_isdigit(int c);
 char				*ibase(__uint128_t nb, int base, int let_case);
 int					ft_atoi(const char *str);
 char				*ft_itoa(__int128 n);
-char 				*ft_strrev(char *str);
+char				*ft_strrev(char *str);
 
 #endif
